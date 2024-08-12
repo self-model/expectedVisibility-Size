@@ -1,0 +1,1 @@
+/var/spool/slurmd/job4615109/slurm_script: line 13: continue: only meaningful in a `for', `while', or `until' loop
