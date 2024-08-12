@@ -3,7 +3,7 @@
 #SBATCH --ntasks-per-node=48
 #SBATCH --job-name=fit_parameters_size
 #SBATCH --partition=short
-#SBATCH --time=8:00:00
+#SBATCH --time=1:00:00
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=lady7504@ox.ac.uk
 
