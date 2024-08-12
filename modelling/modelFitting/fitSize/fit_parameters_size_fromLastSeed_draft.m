@@ -41,7 +41,7 @@ A = []; b = []; Aeq = []; beq = [];
 nonlcon = [];
 
 if isfile("E_size_fit.mat")
-    load("E_size_fit.mat", "fitted_parameters", "LL");
+    load("E_size_fit.mat");
     first_seed = find(isnan(mean(LL)),1,"first");
 else 
     fitted_parameters = nan([nsubjects,nparams,nseeds]);
