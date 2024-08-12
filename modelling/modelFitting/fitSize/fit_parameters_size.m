@@ -40,10 +40,16 @@ initialParams = lb+rand(nseeds,10).*(ub-lb);
 A = []; b = []; Aeq = []; beq = [];
 nonlcon = [];
 
-fitted_parameters = nan([nsubjects,nparams,nseeds]);
-LL = nan([nsubjects,nseeds]);
+if isfile("E_size_fit.mat")
+    load("E_size_fit.mat");
+    first_seed = find(isnan(mean(LL)),1,"first");
+else
+    fitted_parameters = nan([nsubjects,nparams,nseeds]);
+    LL = nan([nsubjects,nseeds]);
+    first_seed = 1;
+end
 
-for seed=1:nseeds % for seeds = first_seed:nseeds 
+for seed=first_seed:nseeds
 
     seed
     parfor s=1:nsubjects

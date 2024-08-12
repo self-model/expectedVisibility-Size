@@ -3,12 +3,12 @@
 #SBATCH --ntasks-per-node=48
 #SBATCH --job-name=fit_parameters
 #SBATCH --partition=short
-#SBATCH --time=8:00:00
+#SBATCH --time=10:00:00
 #SBATCH --mail-type=BEGIN,END
-#SBATCH --mail-user=alls0672@ox.ac.uk
+#SBATCH --mail-user=lady7504@ox.ac.uk
 
 module purge
 module load MATLAB/R2023a
-matlab -nodisplay -nosplash < fit_parameters.m > run.log
+matlab -nodisplay -nosplash < fit_parameters_occlusion.m > run.log
 continue
 
