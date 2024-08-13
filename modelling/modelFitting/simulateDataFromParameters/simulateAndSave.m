@@ -14,5 +14,5 @@ for i=1:nsubjects
 end
 
 simulated_data = array2table(simulated_data);
-simulated_data.Properties.VariableNames(1:6) = {'subj_id','present','rt','correct','confidence','occlusion_is_low'};
+simulated_data.Properties.VariableNames(1:6) = {'subj_id','present','rt','correct','confidence','easy'};
 writetable(simulated_data,fullfile('simulated_data',[filename,'.csv']),'Delimiter',',')
