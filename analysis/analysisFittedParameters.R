@@ -63,7 +63,7 @@ occ_params_filtered <- occ_parameters[indices_occ, ]
 
 # idkkkk if this is right
 size_params_filtered <- size_params_filtered %>%
-  tibble::rownames_to_column(var = "row_number")  # row names went all weird so doing this but IDK 
+  tibble::rownames_to_column(var = "row_number")  # row numbers went all weird bc of the indexing so doing this but IDK ANYMORE
 
 occ_params_filtered <- occ_params_filtered %>%
   tibble::rownames_to_column(var = "row_number")  
