@@ -102,6 +102,26 @@ t.test(occ.sim.conf_abs$conf_abs) ## 0.02, p < .001
     theme_bw())
 
 ## errors ## 
+occ.sim.accuracy <- occ.sim.df %>%
+  group_by(subj_id,hide_proportion) %>%
+  summarise(
+    hit_rate = (sum(correct == 1 & present == 'present')+0.5)/(sum(present == 'present')+1),
+    fa_rate = (sum(correct == 0 & present == 'absent')+0.5)/(sum(present == 'absent')+1),
+    d = qnorm(hit_rate)-qnorm(fa_rate),
+    c = -0.5*(qnorm(hit_rate)+qnorm(fa_rate))
+  )
+
+occ.sim.dprime <- occ.sim.accuracy %>%
+  dplyr::select(subj_id, hide_proportion,d) %>%
+  tidyr::pivot_wider(names_from=hide_proportion, values_from=d) %>%
+  dplyr::mutate(dprime_occ=`0.1`-`0.35`)
+t.test(occ.sim.dprime$dprime_occ) ## 0.32, p < .001 
+
+occ.sim.criterion <- occ.sim.accuracy %>%
+  dplyr::select(subj_id, hide_proportion,c) %>%
+  tidyr::pivot_wider(names_from=hide_proportion, values_from=c) %>%
+  dplyr::mutate(criterion_occ=`0.1`-`0.35`)
+t.test(occ.sim.criterion$criterion_occ) ## -0.21, p < .001
 
 (occ.sim.errors_plot <- occ.sim.df %>%
     group_by(subj_id,occluded_rows,present) %>%
@@ -199,6 +219,28 @@ t.test(size.sim.conf_abs$conf_abs) ## 0.003, p = .337
          color = "Target presence") +
     scale_color_manual(values = c("absent" = "#E21a1c", "present" = "#377eb8")) +
     theme_bw())
+
+## accuracy ## 
+size.sim.accuracy <- size.sim.df %>%
+  group_by(subj_id,size) %>%
+  summarise(
+    hit_rate = (sum(correct == 1 & present == 'present')+0.5)/(sum(present == 'present')+1),
+    fa_rate = (sum(correct == 0 & present == 'absent')+0.5)/(sum(present == 'absent')+1),
+    d = qnorm(hit_rate)-qnorm(fa_rate),
+    c = -0.5*(qnorm(hit_rate)+qnorm(fa_rate))
+  )
+
+size.sim.dprime <- size.sim.accuracy %>%
+  dplyr::select(subj_id,size,d) %>%
+  tidyr::pivot_wider(names_from=size, values_from=d) %>%
+  dplyr::mutate(dprime_size=`5`-`3`)
+t.test(size.sim.dprime$dprime_size) ## -0.14, p = .019 
+
+size.sim.criterion <- size.sim.accuracy %>%
+  dplyr::select(subj_id,size,c) %>%
+  tidyr::pivot_wider(names_from=size, values_from=c) %>%
+  dplyr::mutate(criterion_size=`5`-`3`)
+t.test(size.sim.criterion$criterion_size) ## 0.18, p < .001
 
 (size.sim.errors_plot <- size.sim.df %>%
     dplyr::mutate(size = factor(ifelse(size==5, 'big','small'), levels=c('big','small'))) %>%
