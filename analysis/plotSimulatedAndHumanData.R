@@ -145,7 +145,7 @@ plot_confidence_by_occlusion <- function(human_df, sim_df, occlusion_levels, fil
     theme_classic() +
     theme(legend.position='none') +
     scale_x_continuous(breaks=occlusion_levels,name='proportion occluded')+
-    scale_y_continuous(name='confidence', limits=c(0.6,1.0)) 
+    scale_y_continuous(name='confidence', limits=c(0.65,0.9)) 
   
   ggsave(paste('../docs/figures/Fig1/',file_name,'.png',sep=''), width=2.2,height=2.2, dpi=600)
 }
