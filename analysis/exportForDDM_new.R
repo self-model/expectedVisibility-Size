@@ -1,5 +1,5 @@
 # too slow participants (to exclude)
-occ_too_slow <- task_df %>%
+occ_too_slow <- task_df_occ %>%
   dplyr::group_by(subj_id) %>%
   dplyr::summarise(top_RT = quantile(RT, 0.95)) %>%
   dplyr::filter(top_RT > 7000) %>%
@@ -14,7 +14,7 @@ size_too_slow <- task_df_size %>%
   unique()
 
 # pre-filter dfs 
-E_occ_ddm <- task_df %>%
+E_occ_ddm <- task_df_occ %>%
   dplyr::filter(!(subj_id %in% occ_too_slow))
 
 E_size_ddm <- task_df_size %>%
@@ -50,14 +50,14 @@ subj_id_mapping <- data.frame(
 ) # save mapping 
 
 E_occ_ddm %>% write.table(
-  file = "../modelling/data/E_occ_new.csv",
+  file = "../modelling/data/E_occ_intersect.csv",
   col.names = TRUE,
   row.names = FALSE,
   sep = ','
 )
 
 E_size_ddm %>% write.table(
-  file = "../modelling/data/E_size_new.csv",
+  file = "../modelling/data/E_size_intersect.csv",
   col.names = TRUE,
   row.names = FALSE,
   sep = ','

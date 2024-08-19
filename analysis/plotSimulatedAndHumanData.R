@@ -1,3 +1,26 @@
+# ---- load and preprocess ----
+
+# simulated data 
+occ.sim.df <- read.csv('../modelling/modelFitting/simulateDataFromParameters/simulated_data/E_occ_intersect.csv') %>%
+  mutate(present=factor(present,levels=c(1,-1),labels=c('present','absent')),
+         occluded_rows=factor(ifelse(easy==0,6,2)), 
+         hide_proportion=ifelse(easy,0.1,0.35)); # why is this phrased differently from line above that's so confusing
+
+size.sim.df <- read.csv('../modelling/modelFitting/simulateDataFromParameters/simulated_data/E_size_intersect.csv') %>%
+  mutate(present=factor(present,levels=c(1,-1),labels=c('present','absent')),
+         size=ifelse(easy,5,3));
+
+# minimal human data
+occ.minimal.df <- read.csv('../modelling/data/E_occ_intersect.csv') %>% # needed to create new E_occ because confidence 
+  mutate(present=factor(present,levels=c(1,-1),labels=c('present','absent')),
+         occluded_rows=factor(ifelse(easy==0,6,2)), 
+         hide_proportion=ifelse(easy,0.1,0.35));
+
+size.minimal.df <- read.csv('../modelling/data/E_size_intersect.csv') %>%
+  mutate(present=factor(present,levels=c(1,-1),labels=c('present','absent')),
+         size=ifelse(easy,5,3));
+
+# set as num
 occ.minimal.df$hide_proportion <- as.numeric(as.character(occ.minimal.df$hide_proportion))
 occ.sim.df$hide_proportion <- as.numeric(as.character(occ.sim.df$hide_proportion))
 
@@ -11,21 +34,21 @@ labels = c('Present','Absent')
 plot_errors_by_occlusion <- function(human_df, sim_df, occlusion_levels, file_name) {
   
   sim_errors <- sim_df %>%
-    group_by(subj_id,hide_proportion,present) %>%
-    summarise(err = 1-mean(correct))
+    dplyr::group_by(subj_id,hide_proportion,present) %>%
+    dplyr::summarise(err = 1-mean(correct))
   
   sim_errors_mean <- sim_errors %>%
-    group_by(hide_proportion,present) %>%
-    summarise(se=se(err),
+    dplyr::group_by(hide_proportion,present) %>%
+    dplyr::summarise(se=se(err),
               err=mean(err))
   
   human_errors <- human_df %>%
-    group_by(subj_id,hide_proportion,present) %>%
-    summarise(err = 1-mean(correct))
+    dplyr::group_by(subj_id,hide_proportion,present) %>%
+    dplyr::summarise(err = 1-mean(correct))
   
   human_errors_mean <- human_errors %>%
-    group_by(hide_proportion,present) %>%
-    summarise(se=se(err),
+    dplyr::group_by(hide_proportion,present) %>%
+    dplyr::summarise(se=se(err),
               err=mean(err))
   
   errors_mean <- merge(human_errors_mean,
@@ -50,30 +73,30 @@ plot_errors_by_occlusion <- function(human_df, sim_df, occlusion_levels, file_na
   ggsave(paste('../docs/figures/Fig1/',file_name,'.png',sep=''), width=2.2,height=2.2, dpi=600)
 }
 
-plot_errors_by_occlusion(occ.minimal.df, occ.sim.df, c(0.10,0.35), 'occ_errors')
+plot_errors_by_occlusion(occ.minimal.df, occ.sim.df, c(0.10,0.35), 'occ_errors_intersect')
 
 ### panel B: RTs ###
 
 plot_RT_by_occlusion <- function(human_df, sim_df, occlusion_levels, file_name) {
   
   sim_RT <- sim_df %>%
-    filter(correct==1)%>%
-    group_by(subj_id,hide_proportion,present) %>%
-    summarise(RT = median(rt))
+    dplyr::filter(correct==1)%>%
+    dplyr::group_by(subj_id,hide_proportion,present) %>%
+    dplyr::summarise(RT = median(rt))
   
   sim_RT_mean <- sim_RT %>%
-    group_by(hide_proportion,present) %>%
-    summarise(se=se(RT),
+    dplyr::group_by(hide_proportion,present) %>%
+    dplyr::summarise(se=se(RT),
               RT=mean(RT))
   
   human_RT <- human_df %>%
-    filter(correct==1)%>%
-    group_by(subj_id,hide_proportion,present) %>%
-    summarise(RT = median(rt))
+    dplyr::filter(correct==1)%>%
+    dplyr::group_by(subj_id,hide_proportion,present) %>%
+    dplyr::summarise(RT = median(rt))
   
   human_RT_mean <- human_RT %>%
-    group_by(hide_proportion,present) %>%
-    summarise(se=se(RT),
+    dplyr::group_by(hide_proportion,present) %>%
+    dplyr::summarise(se=se(RT),
               RT=mean(RT))
   
   RT_mean <- merge(human_RT_mean,
@@ -96,35 +119,35 @@ plot_RT_by_occlusion <- function(human_df, sim_df, occlusion_levels, file_name) 
     theme_classic() +
     theme(legend.position='none') +
     scale_x_continuous(breaks=occlusion_levels,name='proportion occluded')+
-    scale_y_continuous(name='RT (sec)', limits=c(1.25,2.5)) 
+    scale_y_continuous(name='RT (sec)', limits=c(1.5,2.5)) 
   
   ggsave(paste('../docs/figures/Fig1/',file_name,'.png',sep=''), width=2.2,height=2.2, dpi=600)
 }
 
-plot_RT_by_occlusion(occ.minimal.df, occ.sim.df, c(0.10,0.35), 'occ_RT')
+plot_RT_by_occlusion(occ.minimal.df, occ.sim.df, c(0.10,0.35), 'occ_RT_intersect')
 
 ### panel C: confidence ###
 
 plot_confidence_by_occlusion <- function(human_df, sim_df, occlusion_levels, file_name) {
   
   sim_confidence <- sim_df %>%
-    filter(correct==1)%>%
-    group_by(subj_id,hide_proportion,present) %>%
-    summarise(confidence = mean(confidence))
+    dplyr::filter(correct==1)%>%
+    dplyr::group_by(subj_id,hide_proportion,present) %>%
+    dplyr::summarise(confidence = mean(confidence))
   
   sim_confidence_mean <- sim_confidence %>%
-    group_by(hide_proportion,present) %>%
-    summarise(se=se(confidence),
+    dplyr::group_by(hide_proportion,present) %>%
+    dplyr::summarise(se=se(confidence),
               confidence=mean(confidence))
   
   human_confidence <- human_df %>%
-    filter(correct==1)%>%
-    group_by(subj_id,hide_proportion,present) %>%
-    summarise(confidence = mean(confidence))
+    dplyr::filter(correct==1)%>%
+    dplyr::group_by(subj_id,hide_proportion,present) %>%
+    dplyr::summarise(confidence = mean(confidence))
   
   human_confidence_mean <- human_confidence %>%
-    group_by(hide_proportion,present) %>%
-    summarise(se=se(confidence),
+    dplyr::group_by(hide_proportion,present) %>%
+    dplyr::summarise(se=se(confidence),
               confidence=mean(confidence))
   
   confidence_mean <- merge(human_confidence_mean,
@@ -145,12 +168,12 @@ plot_confidence_by_occlusion <- function(human_df, sim_df, occlusion_levels, fil
     theme_classic() +
     theme(legend.position='none') +
     scale_x_continuous(breaks=occlusion_levels,name='proportion occluded')+
-    scale_y_continuous(name='confidence', limits=c(0.65,0.9)) 
+    scale_y_continuous(name='confidence', limits=c(0.6,0.9)) 
   
   ggsave(paste('../docs/figures/Fig1/',file_name,'.png',sep=''), width=2.2,height=2.2, dpi=600)
 }
 
-plot_confidence_by_occlusion(occ.minimal.df, occ.sim.df, c(0.1,0.35), 'occ_confidence')
+plot_confidence_by_occlusion(occ.minimal.df, occ.sim.df, c(0.1,0.35), 'occ_confidence_intersect')
 
 # ---- DO SAME THING FOR SIZE ----
 
@@ -158,21 +181,21 @@ plot_confidence_by_occlusion(occ.minimal.df, occ.sim.df, c(0.1,0.35), 'occ_confi
 plot_errors_by_size <- function(human_df, sim_df, size_levels, file_name) {
   
   sim_errors <- sim_df %>%
-    group_by(subj_id,size,present) %>%
-    summarise(err = 1-mean(correct))
+    dplyr::group_by(subj_id,size,present) %>%
+    dplyr::summarise(err = 1-mean(correct))
   
   sim_errors_mean <- sim_errors %>%
-    group_by(size,present) %>%
-    summarise(se=se(err),
+    dplyr::group_by(size,present) %>%
+    dplyr::summarise(se=se(err),
               err=mean(err))
   
   human_errors <- human_df %>%
-    group_by(subj_id,size,present) %>%
-    summarise(err = 1-mean(correct))
+    dplyr::group_by(subj_id,size,present) %>%
+    dplyr::summarise(err = 1-mean(correct))
   
   human_errors_mean <- human_errors %>%
-    group_by(size,present) %>%
-    summarise(se=se(err),
+    dplyr::group_by(size,present) %>%
+    dplyr::summarise(se=se(err),
               err=mean(err))
   
   errors_mean <- merge(human_errors_mean,
@@ -191,36 +214,36 @@ plot_errors_by_size <- function(human_df, sim_df, size_levels, file_name) {
     geom_line()+
     theme_classic() +
     theme(legend.position='none') +
-    scale_x_continuous(breaks=size_levels,name='size')+
-    scale_y_continuous(name='error rate', limits = c(0,0.35)) 
+    scale_x_continuous(breaks=size_levels,name='size', trans = 'reverse')+ # reverse so it goes big left hard right (for sort of consistency ig)
+    scale_y_continuous(name='error rate', limits = c(0,0.2)) 
   
   ggsave(paste('../docs/figures/Fig1/',file_name,'.png',sep=''), width=2.2,height=2.2, dpi=600)
 }
 
-plot_errors_by_size(size.minimal.df, size.sim.df, c(3,5), 'size_errors')
+plot_errors_by_size(size.minimal.df, size.sim.df, c(3,5), 'size_errors_intersect')
 
 ### panel B: RTs ###
 
 plot_RT_by_size <- function(human_df, sim_df, size_levels, file_name) {
   
   sim_RT <- sim_df %>%
-    filter(correct==1)%>%
-    group_by(subj_id,size,present) %>%
-    summarise(RT = median(rt))
+    dplyr::filter(correct==1)%>%
+    dplyr::group_by(subj_id,size,present) %>%
+    dplyr::summarise(RT = median(rt))
   
   sim_RT_mean <- sim_RT %>%
-    group_by(size,present) %>%
-    summarise(se=se(RT),
+    dplyr::group_by(size,present) %>%
+    dplyr::summarise(se=se(RT),
               RT=mean(RT))
   
   human_RT <- human_df %>%
-    filter(correct==1)%>%
-    group_by(subj_id,size,present) %>%
-    summarise(RT = median(rt))
+    dplyr::filter(correct==1)%>%
+    dplyr::group_by(subj_id,size,present) %>%
+    dplyr::summarise(RT = median(rt))
   
   human_RT_mean <- human_RT %>%
-    group_by(size,present) %>%
-    summarise(se=se(RT),
+    dplyr::group_by(size,present) %>%
+    dplyr::summarise(se=se(RT),
               RT=mean(RT))
   
   RT_mean <- merge(human_RT_mean,
@@ -242,36 +265,36 @@ plot_RT_by_size <- function(human_df, sim_df, size_levels, file_name) {
     geom_line()+
     theme_classic() +
     theme(legend.position='none') +
-    scale_x_continuous(breaks=size_levels,name='size')+
-    scale_y_continuous(name='RT (sec)', limits=c(1.25,2.5)) 
+    scale_x_continuous(breaks=size_levels,name='size', trans = 'reverse')+
+    scale_y_continuous(name='RT (sec)', limits=c(1.5,2.5)) 
   
-  ggsave(paste('../docs/figures/Fig1/',file_name,'.png',sep=''), width=2.2,height=2.2, dpi=600)
+ ggsave(paste('../docs/figures/Fig1/',file_name,'.png',sep=''), width=2.2,height=2.2, dpi=600)
 }
 
-plot_RT_by_size(size.minimal.df, size.sim.df, c(3,5), 'size_RT')
+plot_RT_by_size(size.minimal.df, size.sim.df, c(3,5), 'size_RT_intersect')
 
 ### panel C: confidence ###
 
 plot_confidence_by_size <- function(human_df, sim_df, size_levels, file_name) {
   
   sim_confidence <- sim_df %>%
-    filter(correct==1)%>%
-    group_by(subj_id,size,present) %>%
-    summarise(confidence = mean(confidence))
+    dplyr::filter(correct==1)%>%
+    dplyr::group_by(subj_id,size,present) %>%
+    dplyr::summarise(confidence = mean(confidence))
   
   sim_confidence_mean <- sim_confidence %>%
-    group_by(size,present) %>%
-    summarise(se=se(confidence),
+    dplyr::group_by(size,present) %>%
+    dplyr::summarise(se=se(confidence),
               confidence=mean(confidence))
   
   human_confidence <- human_df %>%
-    filter(correct==1)%>%
-    group_by(subj_id,size,present) %>%
-    summarise(confidence = mean(confidence))
+    dplyr::filter(correct==1)%>%
+    dplyr::group_by(subj_id,size,present) %>%
+    dplyr::summarise(confidence = mean(confidence))
   
   human_confidence_mean <- human_confidence %>%
-    group_by(size,present) %>%
-    summarise(se=se(confidence),
+    dplyr::group_by(size,present) %>%
+    dplyr::summarise(se=se(confidence),
               confidence=mean(confidence))
   
   confidence_mean <- merge(human_confidence_mean,
@@ -291,10 +314,10 @@ plot_confidence_by_size <- function(human_df, sim_df, size_levels, file_name) {
     geom_line()+
     theme_classic() +
     theme(legend.position='none') +
-    scale_x_continuous(breaks=size_levels,name='size')+
+    scale_x_continuous(breaks=size_levels,name='size', trans = 'reverse')+
     scale_y_continuous(name='confidence', limits=c(0.7,0.9)) 
   
   ggsave(paste('../docs/figures/Fig1/',file_name,'.png',sep=''), width=2.2,height=2.2, dpi=600)
 }
 
-plot_confidence_by_size(size.minimal.df, size.sim.df, c(3,5), 'size_confidence')
+plot_confidence_by_size(size.minimal.df, size.sim.df, c(3,5), 'size_confidence_intersect')
