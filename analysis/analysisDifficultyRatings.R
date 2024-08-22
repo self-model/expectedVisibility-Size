@@ -216,17 +216,3 @@ conf_summary <- task_df_size %>%
          color = "Target presence") +
     scale_color_manual(values=c("#377eb8", "#E21a1c"))+  
     theme_bw())
-
-
-
-# ---- try an anova (fuck anovas why would you not have a priori hypotheses) ----
-
-RT_size_absent <- task_df_size %>%
-  dplyr::filter(RT > 100 & RT < 7000 & present == 0 & correct == TRUE) %>%
-  dplyr::group_by(subj_id, size, group) %>%  # Include group in the grouping
-  dplyr::summarise(RT = median(RT), .groups = 'drop') %>%
-  tidyr::pivot_wider(names_from = size, values_from = RT) %>%
-  dplyr::mutate(RT_size_absent = `5` - `3`)
-
-summary(aov(RT_size_absent ~ group, data = RT_size_absent))
-TukeyHSD(aov(RT_size_absent ~ group, data = RT_size_absent))
