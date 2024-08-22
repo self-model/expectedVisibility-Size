@@ -94,7 +94,7 @@ occ_parameters_intersect <- read.table('../modelling/modelFitting/bestParameters
   dplyr::mutate(alpha=V8**2,
          belalpha=V9**2,
          gamma = V5,
-         diffalpha = belalpha-alpha,
+         diffalpha = alpha-belalpha,
          theta0 = V1/alpha, # V8
          theta1 = (V1+V2)/alpha, # V8
          beltheta0 = V3/belalpha, # V9
@@ -104,7 +104,7 @@ size_parameters_intersect <- read.table('../modelling/modelFitting/bestParameter
   dplyr::mutate(alpha=V8**2,
          belalpha=V9**2,
          gamma = V5,
-         diffalpha = belalpha-alpha,
+         diffalpha = alpha-belalpha,
          theta0 = V1/alpha, # V8
          theta1 = (V1+V2)/alpha, # V8
          beltheta0 = V3/belalpha, # V9
