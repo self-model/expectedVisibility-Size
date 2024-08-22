@@ -103,8 +103,8 @@ t.test(occ.sim.conf_abs$conf_abs) ## 0.02, p < .001
 
 ## errors ## 
 occ.sim.accuracy <- occ.sim.df %>%
-  group_by(subj_id,hide_proportion) %>%
-  summarise(
+  dplyr::group_by(subj_id,hide_proportion) %>%
+  dplyr::summarise(
     hit_rate = (sum(correct == 1 & present == 'present')+0.5)/(sum(present == 'present')+1),
     fa_rate = (sum(correct == 0 & present == 'absent')+0.5)/(sum(present == 'absent')+1),
     d = qnorm(hit_rate)-qnorm(fa_rate),
@@ -116,6 +116,12 @@ occ.sim.dprime <- occ.sim.accuracy %>%
   tidyr::pivot_wider(names_from=hide_proportion, values_from=d) %>%
   dplyr::mutate(dprime_occ=`0.1`-`0.35`)
 t.test(occ.sim.dprime$dprime_occ) ## 0.32, p < .001 
+
+occ.sim.fa <- occ.sim.accuracy %>%
+  dplyr::select(subj_id, hide_proportion, fa_rate) %>%
+  tidyr::pivot_wider(names_from=hide_proportion, values_from=fa_rate) %>%
+  dplyr::mutate(fa_occ=`0.1`-`0.35`)
+t.test(occ.sim.fa$fa_occ)
 
 occ.sim.criterion <- occ.sim.accuracy %>%
   dplyr::select(subj_id, hide_proportion,c) %>%
