@@ -4,11 +4,13 @@
 occ.sim.df <- read.csv('../modelling/modelFitting/simulateDataFromParameters/simulated_data/E_occ_intersect.csv') %>%
   mutate(present=factor(present,levels=c(1,-1),labels=c('present','absent')),
          occluded_rows=factor(ifelse(easy==0,6,2)), 
-         hide_proportion=ifelse(easy,0.1,0.35)); # why is this phrased differently from line above that's so confusing
+         hide_proportion=ifelse(easy,0.1,0.35),
+         confidence=2*confidence-1); # why is this phrased differently from line above that's so confusing
 
 size.sim.df <- read.csv('../modelling/modelFitting/simulateDataFromParameters/simulated_data/E_size_intersect.csv') %>%
   mutate(present=factor(present,levels=c(1,-1),labels=c('present','absent')),
-         size=ifelse(easy,5,3));
+         size=ifelse(easy,5,3),
+         confidence=2*confidence-1);
 
 # minimal human data
 occ.minimal.df <- read.csv('../modelling/data/E_occ_intersect.csv') %>% # needed to create new E_occ because confidence 
@@ -29,6 +31,11 @@ size.sim.df$size <- as.numeric(as.character(size.sim.df$size))
 
 detection_colors = c('#377eb8', '#e41a1c');
 labels = c('Present','Absent')
+
+# why does se not work anymore? here's your own
+se <- function(x) {
+  sd(x) / sqrt(length(x))
+}
 
 ### panel A: errors ###
 plot_errors_by_occlusion <- function(human_df, sim_df, occlusion_levels, file_name) {
@@ -315,7 +322,7 @@ plot_confidence_by_size <- function(human_df, sim_df, size_levels, file_name) {
     theme_classic() +
     theme(legend.position='none') +
     scale_x_continuous(breaks=size_levels,name='size', trans = 'reverse')+
-    scale_y_continuous(name='confidence', limits=c(0.7,0.9)) 
+    scale_y_continuous(name='confidence', limits=c(0.6,0.9)) 
   
   ggsave(paste('../docs/figures/Fig1/',file_name,'.png',sep=''), width=2.2,height=2.2, dpi=600)
 }
